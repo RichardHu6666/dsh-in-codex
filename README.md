@@ -49,6 +49,22 @@ submit_task、wait_task、get_task、continue_task、cancel_task。
 不要提交、推送、合并或回滚我的项目代码。
 ```
 
+## 在项目中使用
+
+临时委派，直接对 Codex 说：
+
+> 这个任务由你规划，通过 deepseek_harness 交给 DeepSeek 修改代码和运行测试。
+> 你负责检查实际 diff、独立复测和反馈修复；先确认任务目录在 MCP 允许范围内。
+
+希望整个项目默认这样协作，就让 Codex：
+
+> 按 DEPLOYMENT.md 的“项目默认分工”示例，将规则合并到当前项目的 AGENTS.md，
+> 保留原有规则，并检查配套 delegate-deepseek-harness Skill 和 MCP 是否可用。
+
+`AGENTS.md` 约定默认分工，Skill 描述执行流程，MCP 提供实际工具。
+全局注册不等于任意目录可写；换项目须确认允许的根目录，必要时重新运行 setup。
+这不是强制路由：工具不可用时应报告问题，不能假装已经委派。
+
 ## 说明
 
 配置向导不调用模型；真实任务可能产生 API 费用。
