@@ -1,0 +1,17 @@
+.venv/
+.runtime/
+work/
+__pycache__/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+dist/
+build/
+node_modules/
+.env
+.env.*
+!.env.example
+.codex/
+*.tgz
+.DS_Store
+Thumbs.db

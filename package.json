@@ -1,0 +1,16 @@
+{
+  "name": "dsh-in-codex",
+  "version": "0.1.0",
+  "description": "Unofficial task-level DeepSeek Harness MCP bridge for Codex",
+  "license": "MIT",
+  "author": "RichardHu6666",
+  "repository": { "type": "git", "url": "git+https://github.com/RichardHu6666/dsh-in-codex.git" },
+  "homepage": "https://github.com/RichardHu6666/dsh-in-codex#readme",
+  "bugs": { "url": "https://github.com/RichardHu6666/dsh-in-codex/issues" },
+  "keywords": ["mcp", "codex", "deepseek", "harness"],
+  "bin": { "dsh-in-codex": "bin/cli.cjs" },
+  "files": ["bin/*.cjs", "src/harness_mcp/*.py", "pyproject.toml", "README.md", "LICENSE", "SECURITY.md", "CONTRIBUTING.md", "VERIFICATION.md", ".env.example", "examples/*.toml", ".agents/skills/delegate-deepseek-harness/SKILL.md"],
+  "scripts": { "test": "node --test tests/launcher.test.cjs" },
+  "engines": { "node": ">=22.19.0" },
+  "dependencies": { "@deepseek-ai/dsh": "0.1.5-rc.1" }
+}
