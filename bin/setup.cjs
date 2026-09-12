@@ -52,8 +52,15 @@ async function setup(options, api) {
       },
     })).root;
     const [python] = api.findPython(options.python);
-    api.run(process.platform === 'win32' ? 'pwsh' : 'bwrap',
-      [process.platform === 'win32' ? '--version' : '--version']);
+    if (process.platform === 'win32') {
+      const shell = spawnSync('pwsh', ['-NoProfile', '-Command', '$PSVersionTable.PSVersion.ToString()'],
+        { stdio: 'ignore' }).error ? 'powershell.exe' : 'pwsh';
+      api.run(shell, shell === 'pwsh'
+        ? ['-NoProfile', '-Command', '$PSVersionTable.PSVersion.ToString()']
+        : ['-NoProfile', '-Command', '$PSVersionTable.PSVersion.ToString()']);
+    } else {
+      api.run('bwrap', ['--version']);
+    }
     if (!await confirm({
       message: `为 ${root} 安装或更新独立 Python 环境？需要联网，已运行的 MCP 必须先关闭。`,
       default: true,
