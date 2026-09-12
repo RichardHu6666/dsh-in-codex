@@ -10,7 +10,13 @@ the `deepseek_harness` MCP server; do not orchestrate individual file or shell t
 
 - Inspect enough code to state the goal, allowed paths, constraints and concrete
   acceptance criteria. Call `submit_task(workspace, instruction, acceptance)`.
-- The workspace must resolve inside `HARNESS_MCP_ROOT`. Independent tasks may be
+- Always pass the absolute path of the user's current project as workspace.
+  Never infer it from the MCP server CWD, install directory or data directory.
+  Ask the user when the current project is ambiguous. Global setup uses dynamic
+  workspaces; project setup restricts workspaces to its configured root.
+  Continuing a task retains its original workspace even in another project.
+  This does not inherit Codex's sandbox or grant permission to other projects.
+  Independent tasks may be
   submitted in parallel, up to the configured global limit. Keep every task ID.
 - Prefer separate workspaces. The server permits a shared workspace but returns
   warnings listing active conflicting task IDs; never ignore those warnings.

@@ -38,7 +38,8 @@ def paths(request: dict) -> tuple[Path, Path, Path]:
         raise SetupError("无效的配置范围。")
     home = Path(os.environ.get("CODEX_HOME", str(Path.home() / ".codex"))).resolve()
     config = (home if scope == "user" else root / ".codex") / "config.toml"
-    skill = root / ".agents" / "skills" / "delegate-deepseek-harness" / "SKILL.md"
+    skill_base = home / "skills" if scope == "user" else root / ".agents" / "skills"
+    skill = skill_base / "delegate-deepseek-harness" / "SKILL.md"
     return root, config, skill
 
 
@@ -163,10 +164,10 @@ def config_bytes(data: bytes | None, request: dict) -> bytes:
         if name not in existing:
             existing.append(name)
     entry["env_vars"] = existing
-    env = entry.get("env")
-    if env is not None:
-        env.pop("DEEPSEEK_API_KEY", None)
-        env.pop("HARNESS_MCP_ROOT", None)
+    env = entry.setdefault("env", tomlkit.table())
+    env.pop("DEEPSEEK_API_KEY", None)
+    env.pop("HARNESS_MCP_ROOT", None)
+    env["HARNESS_MCP_WORKSPACE_MODE"] = "dynamic" if request["scope"] == "user" else "fixed"
     return tomlkit.dumps(doc).encode("utf-8")
 
 

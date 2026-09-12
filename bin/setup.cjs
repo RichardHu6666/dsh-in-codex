@@ -1,6 +1,8 @@
 'use strict';
 
 const path = require('node:path');
+const os = require('node:os');
+const fs = require('node:fs');
 const { spawnSync } = require('node:child_process');
 
 function backend(executable, action, payload) {
@@ -24,7 +26,22 @@ async function setup(options, api) {
   const { input, password, confirm, select } = await import('@inquirer/prompts');
   try {
     console.log('dsh-in-codex 配置向导\n不会自动调用模型，也不会更改 Codex 审批权限。');
-    const root = api.layout(await input({
+    const scope = await select({
+      message: '将 MCP 注册到哪里？',
+      choices: [
+        { name: '用户配置（推荐；每次任务使用当前 Codex 项目的绝对路径）', value: 'user' },
+        { name: '项目配置（仅允许指定项目目录内的任务）', value: 'project' },
+      ],
+    });
+    let root;
+    if (scope === 'user') {
+      root = path.join(path.resolve(process.env.CODEX_HOME || path.join(os.homedir(), '.codex')),
+        'dsh-in-codex', process.platform);
+      console.log(`用户数据目录：${root}\n仅存放凭证、依赖和任务记录，不限制任务到这个目录。`);
+      if (!await confirm({ message: '确认创建或复用此用户数据目录？', default: true })) return;
+      fs.mkdirSync(root, { recursive: true });
+      root = api.layout(root).root;
+    } else root = api.layout(await input({
       message: '允许 Harness 操作的项目根目录（绝对路径）',
       default: options.root || process.cwd(),
       validate: value => {
@@ -37,13 +54,6 @@ async function setup(options, api) {
     const [python] = api.findPython(options.python);
     api.run(process.platform === 'win32' ? 'pwsh' : 'bwrap',
       [process.platform === 'win32' ? '--version' : '--version']);
-    const scope = await select({
-      message: '将 MCP 注册到哪里？',
-      choices: [
-        { name: '当前任务项目（需在 Codex 中信任该项目）', value: 'project' },
-        { name: '用户配置（所有 Codex 窗口可见，任务范围仍限定为上述目录）', value: 'user' },
-      ],
-    });
     if (!await confirm({
       message: `为 ${root} 安装或更新独立 Python 环境？需要联网，已运行的 MCP 必须先关闭。`,
       default: true,
@@ -56,16 +66,16 @@ async function setup(options, api) {
     if (info.env_tracked) throw new Error('.env 已被 Git 跟踪。请先自行处理跟踪及密钥泄露风险，再重新配置。');
     let key;
     if (info.environment_key) {
-      const save = await confirm({ message: '检测到环境变量密钥，是否同时保存到项目 .env？（明文、受限权限）', default: false });
+      const save = await confirm({ message: `检测到环境变量密钥，是否同时保存到 ${root}/.env？（明文、受限权限）`, default: false });
       if (save) key = process.env.DEEPSEEK_API_KEY;
     } else if (!info.local_key || await confirm({ message: '已存在本地密钥，是否更换？', default: false })) {
       key = await password({
-        message: 'DeepSeek API Key（隐藏输入，将保存到项目 .env）',
+        message: `DeepSeek API Key（隐藏输入，将保存到 ${root}/.env）`,
         mask: '*',
         validate: value => value.trim().length > 0 && !/[\r\n\0]/.test(value) || '密钥不能为空或包含换行',
       });
     }
-    const skill = await confirm({ message: '在任务项目安装配套 Codex Skill？已有不同内容时会备份替换。', default: true });
+    const skill = await confirm({ message: `安装${scope === 'user' ? '用户级' : '项目级'} Codex Skill？已有不同内容时会备份替换。`, default: true });
     console.log(`将合并 ${root}/.gitignore，${key ? '更新' : '保留'} .env，${info.existing_mcp ? '更新已有' : '新增'} deepseek_harness 配置。`);
     console.log('其他 MCP 配置不变。修改前备份保存在任务目录 .runtime/setup-backups。');
     if (!await confirm({ message: '确认写入以上配置？', default: false })) {
@@ -81,7 +91,9 @@ async function setup(options, api) {
     const verified = backend(executable, 'verify', request);
     console.log(`MCP 握手成功，发现 ${verified.tools.length} 个工具。未验证密钥有效性，未调用模型。`);
     console.log('在 Codex 中重新加载 MCP 或重启客户端；项目级配置需信任任务项目。');
-    console.log(`任务目录：${root}\n若 Codex CLI 已安装，可进入该目录执行 codex。`);
+    console.log(scope === 'user'
+      ? '全局配置完成。进入任意项目使用 Codex；每次委派须传入该项目的绝对路径。'
+      : `任务目录：${root}\n若 Codex CLI 已安装，可进入该目录执行 codex。`);
   } catch (error) {
     if (error.name === 'ExitPromptError' || error.name === 'AbortPromptError') {
       console.log('\n已取消；已完成的依赖安装不会回滚。');

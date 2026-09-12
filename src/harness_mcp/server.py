@@ -21,14 +21,27 @@ async def lifespan(_server):
             await runner.close()
 
 
-mcp = FastMCP("deepseek-harness", lifespan=lifespan)
+mcp = FastMCP(
+    "deepseek-harness", lifespan=lifespan,
+    instructions=(
+        "For every task, explicitly pass the absolute path of the user's current project "
+        "as workspace. Never infer it from the MCP installation or server working directory. "
+        "Ask if the current project is ambiguous. Only delegate work authorized for that project. "
+        "Existing tasks keep their original workspace on continuation. "
+        "Use wait_task, inspect actual diffs and independently verify tests."
+    ),
+)
 
 
 @mcp.tool(structured_output=True)
 async def submit_task(
     workspace: str, instruction: str, acceptance: list[str], ctx: Context,
 ) -> dict[str, Any]:
-    """Start a coding task and return immediately. Multiple tasks may queue or run."""
+    """Start a task in workspace: explicitly pass the absolute current project directory.
+
+    Do not use the service installation directory or infer workspace from the server CWD.
+    Multiple tasks may queue or run. Directory selection does not inherit client sandboxing.
+    """
     return await ctx.request_context.lifespan_context.submit(workspace, instruction, acceptance)
 
 

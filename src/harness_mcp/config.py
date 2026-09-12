@@ -26,6 +26,7 @@ class Settings:
     timeout: float = 1800
     initialize_timeout: float = 60
     max_concurrency: int = 8
+    workspace_mode: str = "fixed"
 
     @classmethod
     def from_env(cls) -> Settings:
@@ -46,8 +47,11 @@ class Settings:
             raise ValueError("HARNESS_MCP_MAX_CONCURRENCY must be an integer") from exc
         if not 1 <= max_concurrency <= 64:
             raise ValueError("HARNESS_MCP_MAX_CONCURRENCY must be between 1 and 64")
+        mode = os.environ.get("HARNESS_MCP_WORKSPACE_MODE", "fixed")
+        if mode not in {"fixed", "dynamic"}:
+            raise ValueError("HARNESS_MCP_WORKSPACE_MODE must be fixed or dynamic")
         return cls(root, os.environ.get("HARNESS_MCP_MODEL", "deepseek-v4-flash"),
-                   timeout, 60, max_concurrency)
+                   timeout, 60, max_concurrency, mode)
 
     @property
     def runtime(self) -> Path:
@@ -58,6 +62,17 @@ class Settings:
 
     def workspace(self, raw: str) -> Path:
         path = Path(raw)
+        if self.workspace_mode == "dynamic":
+            if not path.is_absolute():
+                raise ValueError("dynamic workspace must be an explicit absolute current project path")
+            path = path.resolve(strict=True)
+            if not path.is_dir() or path == Path(path.anchor):
+                raise ValueError("workspace must be an existing project directory, not a filesystem root")
+            if path.is_relative_to(self.root) or self.root.is_relative_to(path):
+                raise ValueError("workspace must not include the service data directory")
+            if any(p in {".runtime", ".venv", ".git"} for p in path.parts):
+                raise ValueError("internal directories are not task workspaces")
+            return path
         if not path.is_absolute():
             path = self.root / path
         path = path.resolve(strict=True)

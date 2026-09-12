@@ -71,7 +71,8 @@ class HarnessRunner:
             self.check_key()
             self.validate_input(instruction, acceptance)
             path = self.settings.workspace(workspace)
-            relative = path.relative_to(self.settings.root).as_posix()
+            relative = (str(path) if self.settings.workspace_mode == "dynamic"
+                        else path.relative_to(self.settings.root).as_posix())
             tid = uuid.uuid4().hex
             conflicts = self.store.active_workspace_tasks(relative)
             warnings = []

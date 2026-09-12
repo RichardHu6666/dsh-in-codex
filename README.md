@@ -62,7 +62,8 @@ submit_task、wait_task、get_task、continue_task、cancel_task。
 > 保留原有规则，并检查配套 delegate-deepseek-harness Skill 和 MCP 是否可用。
 
 `AGENTS.md` 约定默认分工，Skill 描述执行流程，MCP 提供实际工具。
-全局注册不等于任意目录可写；换项目须确认允许的根目录，必要时重新运行 setup。
+全局 setup 配置一次即可换项目：Codex 每次委派显式传入当前项目的绝对路径。
+项目级模式仍限定目录；两种模式都不会自动继承 Codex 的沙箱权限。
 这不是强制路由：工具不可用时应报告问题，不能假装已经委派。
 
 ## 说明
