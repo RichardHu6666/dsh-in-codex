@@ -1,6 +1,6 @@
 import pytest
 
-from harness_mcp.evidence import harness_test_evidence
+from scripts.evidence import harness_test_evidence
 
 
 def records(output, error=False):

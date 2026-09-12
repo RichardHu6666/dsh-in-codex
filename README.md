@@ -69,7 +69,31 @@ sudo apt-get install -y python3-venv bubblewrap
 git clone https://github.com/RichardHu6666/dsh-in-codex.git
 cd dsh-in-codex
 npm ci
+npm run setup
 ```
+
+`setup` 是推荐的首次配置入口。它会依次引导：
+
+1. 选择允许操作的任务目录，检查 Python 和平台依赖。
+2. 选择项目级或用户级 Codex 注册，确认安装独立 Python 环境。
+3. 隐藏输入 API Key，或保留现有环境变量/本地密钥。
+4. 选择是否安装配套 Skill，展示写入范围并再次确认。
+5. 合并 `.env`、`.gitignore` 与 Codex TOML，备份原文件后写入。
+6. 实际启动注册的 MCP 命令，验证五个工具可被发现；不调用模型。
+
+密钥保存在任务项目的 `.env`，不会写入 Codex 配置。原生 Linux 使用 `0600`，
+Windows 使用当前用户 ACL；WSL 的 Windows 挂载盘若不支持 POSIX 权限，
+会尝试 Windows ACL，并说明它不提供 Linux 多用户隔离。无法设置私密权限时停止写入。
+已有配置发生变化、`.env` 被 Git 跟踪或格式不合法时，也会停止而非覆盖。
+备份在 `.runtime/setup-backups/`，包含原文件内容，应作为敏感文件保管。
+
+选择用户级注册时，使用 `CODEX_HOME/config.toml`（未设置时为用户主目录的
+`.codex/config.toml`）；项目级注册写入任务目录的 `.codex/config.toml`。
+其他 MCP 与原有审批设置保持不变。完成后重载或重启 Codex，
+项目级配置仍需要信任项目；向导不会绕过客户端信任或审批机制。
+
+按 Ctrl+C 可取消。最终确认前不会修改凭证和 Codex 配置，但已经安装的依赖会保留。
+下面的 `init`、`doctor` 和手工配置步骤用于非交互部署，运行向导成功后无须重复执行。
 
 需要区分两个目录：
 
@@ -78,7 +102,7 @@ npm ci
 
 二者可以相同，也可以不同。不要将整个用户主目录或磁盘根目录设为任务根目录。
 
-### 2. 初始化任务项目
+### 2. 非交互初始化（可选）
 
 仍在工具目录执行。请将示例路径替换为自己的项目：
 
@@ -239,12 +263,16 @@ submit_task -> wait_task -> 检查事件、diff 与测试
 
 1. 停止相关 MCP 客户端，确认任务已结束并检查未提交修改。
 2. 更新工具源码，执行 `npm ci`。
-3. 对每个任务根目录重新运行 `init`，然后运行 `doctor`。
+3. 对每个任务根目录运行 `npm run setup`，或非交互运行 `init` 后再运行 `doctor`。
 4. 若安装路径改变，更新客户端配置，再启动 MCP。
 
 迁移到另一台机器时重新安装依赖，不复制 `.venv`、`node_modules` 或
 `.runtime/npm-python-*`。凭证单独配置。历史记录可作为敏感审计资料保留，
 但不承诺跨机器恢复正在运行的任务或 Harness 会话；新部署推荐使用新的 `.runtime`。
+
+旧的 `scripts/start_codex.py` / `.ps1` 专用启动链已移除，请迁移到向导注册后正常启动
+Codex。旧脚本中针对个别 Windows 插件的 Git Bash PATH 调整不属于 MCP 功能，
+向导不会修改 Codex 插件、Hook 或系统 PATH。
 
 ## 常见问题
 

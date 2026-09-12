@@ -10,7 +10,7 @@ const version = require('../package.json').version;
 
 function parse(argv, env = process.env) {
   const command = argv[0] || 'help';
-  if (!['init', 'serve', 'doctor', 'help', '--help', '--version'].includes(command)) {
+  if (!['setup', 'init', 'serve', 'doctor', 'help', '--help', '--version'].includes(command)) {
     throw new Error(`Unknown command: ${command}`);
   }
   let root = env.HARNESS_MCP_ROOT;
@@ -73,9 +73,12 @@ function runtimeRoot() {
 
 async function main(argv = process.argv.slice(2)) {
   const options = parse(argv);
+  if (options.command === 'setup') {
+    return require('./setup.cjs').setup(options, { main, layout, findPython, run, packageRoot });
+  }
   if (options.command === '--version') return console.log(version);
   if (['help', '--help'].includes(options.command)) {
-    return console.log('dsh-in-codex <init|doctor|serve> --root ABSOLUTE_DIRECTORY [--python EXECUTABLE]\nRequires Node >=22.19 and Python >=3.11. Set DEEPSEEK_API_KEY in the client environment or project .env.\ninit installs dependencies; doctor does not call the model; serve uses STDIO.');
+    return console.log('dsh-in-codex setup\n dsh-in-codex <init|doctor|serve> --root ABSOLUTE_DIRECTORY [--python EXECUTABLE]\nRequires Node >=22.19 and Python >=3.11. Set DEEPSEEK_API_KEY in the client environment or project .env.\nsetup is interactive; init installs dependencies; doctor does not call the model; serve uses STDIO.');
   }
   const dirs = layout(options.root);
   if (options.command === 'init') {
@@ -94,6 +97,11 @@ async function main(argv = process.argv.slice(2)) {
       throw error;
     }
     try {
+      if (fs.existsSync(dirs.executable) && fs.existsSync(dirs.ready)) {
+        run(dirs.executable, ['-c',
+          'import json, pathlib, sys; from harness_mcp.processes import process_matches; root=pathlib.Path(sys.argv[1]); tasks=[json.loads(p.read_text(encoding="utf-8")) for p in (root/".runtime"/"tasks").glob("*.json")]; busy=any(t.get("owner_pid") and t.get("owner_created") and process_matches(t["owner_pid"],t["owner_created"]) for t in tasks); sys.exit("Close active MCP owners before reinstalling this environment" if busy else 0)',
+          dirs.root]);
+      }
       fs.rmSync(dirs.ready, { force: true });
       run(python, [...prefix, '-m', 'venv', dirs.envDir]);
       run(dirs.executable, ['-m', 'pip', 'install', '--disable-pip-version-check', packageRoot]);
@@ -135,7 +143,7 @@ async function main(argv = process.argv.slice(2)) {
   }).finally(() => handlers.forEach(([signal, handler]) => process.off(signal, handler)));
 }
 
-module.exports = { parse, layout, findPython };
+module.exports = { parse, layout, findPython, main };
 if (require.main === module) main().catch(error => {
   console.error(`dsh-in-codex: ${error.message}`);
   process.exitCode = 1;

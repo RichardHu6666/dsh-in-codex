@@ -53,10 +53,6 @@ class FileLock:
         self.close()
 
 
-class InstanceLock(FileLock):
-    """Compatibility alias retained for external callers."""
-
-
 class SlotLease(FileLock):
     """A lock held for the lifetime of one Harness worker."""
 

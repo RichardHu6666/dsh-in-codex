@@ -34,9 +34,10 @@ async def runner(settings, monkeypatch):
 
 
 async def finished(bridge):
-    job = bridge.job
-    assert job is not None
-    await asyncio.wait_for(asyncio.shield(job), 15)
+    assert bridge.jobs
+    await asyncio.wait_for(asyncio.gather(*(
+        asyncio.shield(job) for job in bridge.jobs.values()
+    )), 15)
 
 
 async def test_roundtrip_edit_and_continue(runner):
@@ -69,7 +70,7 @@ async def test_immediate_cancel(runner):
     state = await runner.cancel(result["task_id"])
     assert state["status"] == "cancelled"
     assert state["stopped_confirmed"] is True
-    assert runner.active_id is None
+    assert all(job.done() for job in runner.jobs.values())
 
 
 async def test_parallel_tasks_and_workspace_warning(runner):

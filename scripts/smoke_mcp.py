@@ -15,7 +15,7 @@ from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
 
 from harness_mcp.config import load_local_credentials
-from harness_mcp.evidence import harness_test_evidence
+from evidence import harness_test_evidence
 
 ROOT = Path(__file__).resolve().parents[1]
 

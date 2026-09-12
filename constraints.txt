@@ -41,4 +41,5 @@ sse-starlette==3.4.11
 starlette==1.6.0
 typing-inspection==0.4.4
 typing-extensions==4.16.0
+tomlkit==0.13.3
 uvicorn==0.52.4

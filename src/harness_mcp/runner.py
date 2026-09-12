@@ -45,18 +45,6 @@ class HarnessRunner:
         self.closing = False
         self.control_job = asyncio.create_task(self._control_loop())
 
-    @property
-    def active_id(self) -> str | None:
-        return next((key for key, job in self.jobs.items() if not job.done()), None)
-
-    @property
-    def worker(self) -> Worker | None:
-        return self.workers.get(self.active_id) if self.active_id else None
-
-    @property
-    def job(self) -> asyncio.Task | None:
-        return next(iter(self.jobs.values()), None)
-
     @staticmethod
     def check_key():
         if not os.environ.get("DEEPSEEK_API_KEY", "").strip():
