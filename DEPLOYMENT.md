@@ -34,7 +34,7 @@ Codex CLI 不是 MCP 服务安装本身的依赖；最终使用需要可接入 M
 
 ## 项目默认分工
 
-仅针对一次任务时，在对话中明确要求使用 `deepseek_harness` 即可。
+仅针对一次任务时，在对话中明确要求使用 dsh-in-codex MCP 即可。
 若希望当前项目的代码实现默认交给 DeepSeek，将下面规则合并到**任务项目根目录**
 的 `AGENTS.md`，不是工具安装目录。保留已有内容；存在冲突时先与用户确认。
 不要默认写入用户主目录的全局 `AGENTS.md`，避免影响所有无关项目。
@@ -43,8 +43,8 @@ Codex CLI 不是 MCP 服务安装本身的依赖；最终使用需要可接入 M
 ## Codex 与 DeepSeek Harness 分工
 
 - 除非用户另有要求，本项目的代码实现、测试编写和首轮测试默认委派给
-  deepseek_harness；Codex 负责需求澄清、代码阅读、任务拆分、审查和独立验收。
-- 优先遵循 delegate-deepseek-harness Skill。提交任务必须附带工作目录、
+  dsh-in-codex MCP；Codex 负责需求澄清、代码阅读、任务拆分、审查和独立验收。
+- 优先遵循 dsh-in-codex Skill。提交任务必须附带工作目录、
   目标、允许修改的文件范围、约束和可验证的验收标准。
 - 委派前确认 MCP 可用且当前项目路径明确。用户级动态模式要求传入项目的绝对路径；
   项目级固定模式要求路径位于 `HARNESS_MCP_ROOT` 内。不得为了执行任务扩大
@@ -242,7 +242,8 @@ tool_timeout_sec = 70
 若桌面客户端找不到 `node`，将 `command` 改为 Node 可执行文件的绝对路径。
 Linux 示例见 [examples/codex-linux.toml](examples/codex-linux.toml)，
 Windows 示例见 [examples/codex-windows.toml](examples/codex-windows.toml)。
-服务名称保留为 `deepseek_harness`，以兼容已有工具调用和 Skill。
+配置中的服务键暂时保留为 `deepseek_harness`，这是 Codex 的内部兼容标识；
+用户侧项目名称、启动命令和使用方式统一称为 `dsh-in-codex`。
 
 可将 [.agents/skills/delegate-deepseek-harness](.agents/skills/delegate-deepseek-harness)
 复制到你的任务项目的 `.agents/skills/`，让 Codex 使用任务委派与独立验收规则。
@@ -250,7 +251,7 @@ Skill 不是服务启动的必要条件。
 
 首次对话可以这样验证：
 
-> 检查 deepseek_harness 的五个工具是否可用，先不要调用模型。
+> 检查 dsh-in-codex MCP 的五个工具是否可用，先不要调用模型。
 > 然后告诉我允许的任务目录与预期测试流程，等待我确认后再提交任务。
 
 确认后，在当前项目内准备一个独立的测试子目录，再让 Codex：

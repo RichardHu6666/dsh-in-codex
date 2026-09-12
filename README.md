@@ -53,14 +53,14 @@ submit_task、wait_task、get_task、continue_task、cancel_task。
 
 临时委派，直接对 Codex 说：
 
-> 这个任务由你规划，通过 deepseek_harness 交给 DeepSeek 修改代码和运行测试。
+> 这个任务由你规划，通过 dsh-in-codex MCP 交给 DeepSeek 修改代码和运行测试。
 > 你负责检查实际 diff、独立复测和反馈修复；每次委派都必须把当前项目的绝对路径作为
 > `workspace` 传给 MCP。不要从 MCP 安装目录或服务数据目录推断工作目录。
 
 希望整个项目默认这样协作，就让 Codex：
 
 > 按 DEPLOYMENT.md 的“项目默认分工”示例，将规则合并到当前项目的 AGENTS.md，
-> 保留原有规则，并检查配套 delegate-deepseek-harness Skill 和 MCP 是否可用。
+> 保留原有规则，并检查配套 dsh-in-codex Skill 和 MCP 是否可用。
 
 `AGENTS.md` 约定默认分工，Skill 描述执行流程，MCP 提供实际工具。
 用户级 setup 配置一次即可换项目：Codex 每次委派显式传入当前项目的绝对路径。
