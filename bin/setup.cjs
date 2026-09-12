@@ -77,7 +77,7 @@ async function setup(options, api) {
     }
     const skill = await confirm({ message: `安装${scope === 'user' ? '用户级' : '项目级'} Codex Skill？已有不同内容时会备份替换。`, default: true });
     console.log(`将合并 ${root}/.gitignore，${key ? '更新' : '保留'} .env，${info.existing_mcp ? '更新已有' : '新增'} deepseek_harness 配置。`);
-    console.log('其他 MCP 配置不变。修改前备份保存在任务目录 .runtime/setup-backups。');
+    console.log('其他 MCP 配置不变。修改前备份保存在服务数据目录的 .runtime/setup-backups。');
     if (!await confirm({ message: '确认写入以上配置？', default: false })) {
       key = undefined;
       return console.log('已取消；仅保留安装好的 Python 环境，未修改凭证或 Codex 配置。');
@@ -93,7 +93,7 @@ async function setup(options, api) {
     console.log('在 Codex 中重新加载 MCP 或重启客户端；项目级配置需信任任务项目。');
     console.log(scope === 'user'
       ? '全局配置完成。进入任意项目使用 Codex；每次委派须传入该项目的绝对路径。'
-      : `任务目录：${root}\n若 Codex CLI 已安装，可进入该目录执行 codex。`);
+      : `项目配置目录：${root}\n若 Codex CLI 已安装，可进入该目录执行 codex。`);
   } catch (error) {
     if (error.name === 'ExitPromptError' || error.name === 'AbortPromptError') {
       console.log('\n已取消；已完成的依赖安装不会回滚。');

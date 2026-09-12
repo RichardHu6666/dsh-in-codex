@@ -15,7 +15,7 @@ npm ci
 npm run setup
 ```
 
-按终端向导选择任务目录、配置密钥和注册 MCP，完成后重载或重启 Codex。
+按终端向导选择用户级或项目级配置、配置密钥和注册 MCP，完成后重载或重启 Codex。
 无需单独安装 dsh。需要 Node.js 22.19+、Python 3.11+；系统依赖可让 Codex 协助检查。
 
 ## 让你的 Codex 帮你部署
@@ -32,7 +32,7 @@ cd dsh-in-codex
 npm ci
 npm run setup
 
-先确认安装位置与允许 Harness 操作的任务目录；已有仓库则先检查，不重复克隆或覆盖。
+先确认安装位置与当前 Codex 项目；已有仓库则先检查，不重复克隆或覆盖。
 克隆后先阅读 DEPLOYMENT.md 和 SECURITY.md，按当前平台检查环境并处理依赖问题。
 系统级安装、全局配置修改前先征求我的确认，不要关闭沙箱或降低审批权限。
 
@@ -54,7 +54,8 @@ submit_task、wait_task、get_task、continue_task、cancel_task。
 临时委派，直接对 Codex 说：
 
 > 这个任务由你规划，通过 deepseek_harness 交给 DeepSeek 修改代码和运行测试。
-> 你负责检查实际 diff、独立复测和反馈修复；先确认任务目录在 MCP 允许范围内。
+> 你负责检查实际 diff、独立复测和反馈修复；每次委派都必须把当前项目的绝对路径作为
+> `workspace` 传给 MCP。不要从 MCP 安装目录或服务数据目录推断工作目录。
 
 希望整个项目默认这样协作，就让 Codex：
 
@@ -62,8 +63,8 @@ submit_task、wait_task、get_task、continue_task、cancel_task。
 > 保留原有规则，并检查配套 delegate-deepseek-harness Skill 和 MCP 是否可用。
 
 `AGENTS.md` 约定默认分工，Skill 描述执行流程，MCP 提供实际工具。
-全局 setup 配置一次即可换项目：Codex 每次委派显式传入当前项目的绝对路径。
-项目级模式仍限定目录；两种模式都不会自动继承 Codex 的沙箱权限。
+用户级 setup 配置一次即可换项目：Codex 每次委派显式传入当前项目的绝对路径。
+项目级 setup 才会限定任务目录；两种模式都不会自动继承 Codex 的沙箱权限。
 这不是强制路由：工具不可用时应报告问题，不能假装已经委派。
 
 ## 说明
