@@ -27,6 +27,7 @@ class Settings:
     initialize_timeout: float = 60
     max_concurrency: int = 8
     workspace_mode: str = "fixed"
+    execution_backend: str = "sandbox"
 
     @classmethod
     def from_env(cls) -> Settings:
@@ -50,8 +51,11 @@ class Settings:
         mode = os.environ.get("HARNESS_MCP_WORKSPACE_MODE", "fixed")
         if mode not in {"fixed", "dynamic"}:
             raise ValueError("HARNESS_MCP_WORKSPACE_MODE must be fixed or dynamic")
+        backend = os.environ.get("HARNESS_MCP_EXECUTION_BACKEND", "sandbox").strip().lower()
+        if backend not in {"sandbox", "direct"}:
+            raise ValueError("HARNESS_MCP_EXECUTION_BACKEND must be sandbox or direct")
         return cls(root, os.environ.get("HARNESS_MCP_MODEL", "deepseek-v4-flash"),
-                   timeout, 60, max_concurrency, mode)
+                   timeout, 60, max_concurrency, mode, backend)
 
     @property
     def runtime(self) -> Path:
@@ -104,10 +108,14 @@ class Settings:
             "SSL_CERT_DIR", "DEEPSEEK_API_KEY", "DEEPSEEK_BASE_URL",
             "HARNESS_MCP_RUNTIME",
             "HARNESS_MCP_NODE_ROOT",
+            "HARNESS_MCP_EXECUTION_BACKEND",
         }
         env = {k: v for k, v in os.environ.items() if k.upper() in names}
         temp = self.internal("tmp")
         temp.mkdir(parents=True, exist_ok=True)
         env.update(TEMP=str(temp), TMP=str(temp), TMPDIR=str(temp),
                    PYTHONUTF8="1", PYTHONUNBUFFERED="1", HARNESS_MCP_ROOT=str(self.root))
+        env["DSH_PERMISSION_MODE"] = (
+            "danger-full-access" if self.execution_backend == "direct" else "workspace-write"
+        )
         return env

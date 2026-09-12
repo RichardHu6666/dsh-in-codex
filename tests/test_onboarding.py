@@ -77,6 +77,7 @@ def test_user_scope_and_existing_approval_policy(request_data):
     assert "url" not in entry
     assert "DEEPSEEK_API_KEY" not in entry["env"]
     assert entry["env"]["HARNESS_MCP_WORKSPACE_MODE"] == "dynamic"
+    assert entry["env"]["HARNESS_MCP_EXECUTION_BACKEND"] == "sandbox"
     assert "deepseek_harness" not in doc["mcp_servers"]
     assert setup.paths(request_data)[2].is_relative_to(config.parent / "skills")
     assert not (root / ".codex" / "config.toml").exists()

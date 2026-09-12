@@ -58,8 +58,6 @@ async function setup(options, api) {
       api.run(shell, shell === 'pwsh'
         ? ['-NoProfile', '-Command', '$PSVersionTable.PSVersion.ToString()']
         : ['-NoProfile', '-Command', '$PSVersionTable.PSVersion.ToString()']);
-    } else {
-      api.run('bwrap', ['--version']);
     }
     if (!await confirm({
       message: `为 ${root} 安装或更新独立 Python 环境？需要联网，已运行的 MCP 必须先关闭。`,

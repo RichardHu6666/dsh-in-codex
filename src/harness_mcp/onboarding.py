@@ -196,6 +196,9 @@ def config_bytes(data: bytes | None, request: dict) -> bytes:
     env.pop("DEEPSEEK_API_KEY", None)
     env.pop("HARNESS_MCP_ROOT", None)
     env["HARNESS_MCP_WORKSPACE_MODE"] = "dynamic" if request["scope"] == "user" else "fixed"
+    # Keep the secure backend explicit in generated Codex configuration.
+    # Users must intentionally change this to "direct" for unsafe execution.
+    env["HARNESS_MCP_EXECUTION_BACKEND"] = "sandbox"
     return tomlkit.dumps(doc).encode("utf-8")
 
 

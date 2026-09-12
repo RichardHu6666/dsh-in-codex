@@ -46,6 +46,7 @@ class Task:
     cancel_requested: bool = False
     pending_feedback: str | None = None
     warnings: list[str] = field(default_factory=list)
+    execution_backend: str = "sandbox"
 
 
 class TaskStore:

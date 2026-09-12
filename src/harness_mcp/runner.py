@@ -85,6 +85,7 @@ class HarnessRunner:
                 tid, relative, instruction, acceptance, f"codex-{tid}", self.settings.model,
                 owner_pid=self.owner_pid, owner_created=self.owner_created,
                 owner_id=self.owner_id, warnings=warnings,
+                execution_backend=self.settings.execution_backend,
             )
             self.store.save(task)
             self.store.event(task, "submitted", {"acceptance": acceptance, "warnings": warnings})
@@ -147,6 +148,7 @@ class HarnessRunner:
             "dsh_home": str(home), "model": task.model,
             "parent_pid": os.getpid(), "parent_created": self.owner_created,
             "initialize_timeout": self.settings.initialize_timeout,
+            "execution_backend": self.settings.execution_backend,
         })
         return worker
 
@@ -226,7 +228,11 @@ class HarnessRunner:
                     if message["kind"] != "ready":
                         raise RuntimeError(message.get("error", "worker failed to initialize"))
                     worker.ready = True
-                    self.store.event(task, "ready", {"profile": "sdk"})
+                    self.store.event(task, "ready", {
+                        "profile": "sdk",
+                        "execution_backend": task.execution_backend,
+                        "unsafe": task.execution_backend == "direct",
+                    })
                 await self._send(worker, {
                     "kind": "run", "session_id": task.session_id, "prompt": prompt,
                 })

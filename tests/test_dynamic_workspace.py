@@ -69,3 +69,27 @@ def test_mode_environment_validation(tmp_path, monkeypatch):
     monkeypatch.setenv("HARNESS_MCP_WORKSPACE_MODE", "invalid")
     with pytest.raises(ValueError, match="fixed or dynamic"):
         Settings.from_env()
+
+
+def test_execution_backend_defaults_to_fail_closed_sandbox(tmp_path, monkeypatch):
+    monkeypatch.setenv("HARNESS_MCP_ROOT", str(tmp_path))
+    monkeypatch.delenv("HARNESS_MCP_EXECUTION_BACKEND", raising=False)
+    monkeypatch.setenv("DSH_PERMISSION_MODE", "danger-full-access")
+    settings = Settings.from_env()
+    assert settings.execution_backend == "sandbox"
+    assert settings.worker_env()["DSH_PERMISSION_MODE"] == "workspace-write"
+
+
+def test_direct_execution_requires_explicit_backend(tmp_path, monkeypatch):
+    monkeypatch.setenv("HARNESS_MCP_ROOT", str(tmp_path))
+    monkeypatch.setenv("HARNESS_MCP_EXECUTION_BACKEND", "direct")
+    settings = Settings.from_env()
+    assert settings.execution_backend == "direct"
+    assert settings.worker_env()["DSH_PERMISSION_MODE"] == "danger-full-access"
+
+
+def test_execution_backend_rejects_unknown_value(tmp_path, monkeypatch):
+    monkeypatch.setenv("HARNESS_MCP_ROOT", str(tmp_path))
+    monkeypatch.setenv("HARNESS_MCP_EXECUTION_BACKEND", "auto")
+    with pytest.raises(ValueError, match="sandbox or direct"):
+        Settings.from_env()

@@ -1,10 +1,9 @@
 # dsh-in-codex
-
 Codex 负责规划与验收，DeepSeek Harness 负责代码修改和测试。
 
 非官方社区 MCP 集成，支持 Windows 和 Ubuntu / WSL。采用 [MIT 许可证](LICENSE)。
 
-前置条件：需要已经安装codex
+前置条件：需要已经安装codex。更新：关闭 MCP 后在本仓库执行 `npm run update`（详见 DEPLOYMENT.md）。
 
 ## 快速开始
 
@@ -14,6 +13,12 @@ cd dsh-in-codex
 npm ci
 npm run setup
 ```
+
+默认使用 `workspace-write` Bubblewrap/Landlock 沙箱并 fail closed。受信任的
+Jupyter/GPU 容器若被宿主 seccomp 拦截 `unshare(CLONE_NEWUSER)`，可在
+`[mcp_servers.dsh-in-codex.env]` 显式设置
+`HARNESS_MCP_EXECUTION_BACKEND = "direct"`；该 unsafe 模式不调用 Bubblewrap
+或 Landlock，服务不会在沙箱失败时自动降级。
 
 按终端向导选择用户级或项目级配置、配置密钥和注册 MCP，完成后重载或重启 Codex。
 无需单独安装 dsh。需要 Node.js 22.19+、Python 3.11+；系统依赖可让 Codex 协助检查。
@@ -68,7 +73,6 @@ submit_task、wait_task、get_task、continue_task、cancel_task。
 这不是强制路由：工具不可用时应报告问题，不能假装已经委派。
 
 ## 说明
-
 配置向导不调用模型；真实任务可能产生 API 费用。
 只对可信项目使用：路径检查不是操作系统沙箱。不要上传 `.env` 或 `.runtime`。
 

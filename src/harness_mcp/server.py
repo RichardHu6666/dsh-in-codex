@@ -22,7 +22,7 @@ async def lifespan(_server):
 
 
 mcp = FastMCP(
-    "deepseek-harness", lifespan=lifespan,
+    "dsh-in-codex", lifespan=lifespan,
     instructions=(
         "For every task, explicitly pass the absolute path of the user's current project "
         "as workspace. Never infer it from the MCP installation or server working directory. "

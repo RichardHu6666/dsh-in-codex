@@ -122,7 +122,11 @@ async function main(argv = process.argv.slice(2)) {
     run(dirs.executable, ['-m', 'pip', 'check'], { env });
     run(dirs.executable, ['-c',
       'from harness_mcp.config import Settings; from harness_mcp.runtime import sdk_runtime_options; import os; Settings.from_env(); sdk_runtime_options(); print("API key configured:", bool(os.environ.get("DEEPSEEK_API_KEY"))); print("Python/MCP configuration: OK")'], { env });
-    if (process.platform === 'linux') run('bwrap', ['--version']);
+    const backend = env.HARNESS_MCP_EXECUTION_BACKEND || 'sandbox';
+    if (process.platform === 'linux' && backend === 'sandbox') run('bwrap', ['--version']);
+    if (backend === 'direct') {
+      console.error('WARNING: direct execution is enabled; Harness commands run without Bubblewrap/Landlock confinement.');
+    }
     console.error('Local dependency checks passed. Network, sandbox execution and model calls were not tested.');
     return;
   }

@@ -320,6 +320,7 @@ submit_task -> wait_task -> 检查事件、diff 与测试
 | `HARNESS_MCP_MAX_CONCURRENCY` | `8`，范围 `1..64`，同根目录各客户端应配置一致 |
 | `HARNESS_MCP_TIMEOUT` | 单轮超时，默认 `1800` 秒，范围 `1..86400` |
 | `HARNESS_MCP_RUNTIME` | Windows 默认 `node`，Linux 默认 `bundled` |
+| `HARNESS_MCP_EXECUTION_BACKEND` | `sandbox`（默认，workspace-write；沙箱不可用时 fail closed）或显式的 `direct`（unsafe，直接在任务 workspace 执行） |
 | `HARNESS_MCP_NODE_ROOT` | 底层 Node runtime 位置；npm 启动器自动设置，无须手工配置 |
 
 除两个 provider 变量外，其他配置通过客户端进程环境或 MCP 的 `env` 表提供，
@@ -370,6 +371,37 @@ Codex。旧脚本中针对个别 Windows 插件的 Git Bash PATH 调整不属于
 
 真实任务会调用模型并可能计费；超时和修复轮数不等于金额上限。
 `doctor`、离线单元测试和默认握手探针不调用模型。
+
+### 更新现有安装
+
+关闭使用本服务的 Codex/MCP 客户端，在原克隆目录执行 `npm run update`。
+用户级安装默认定位当前 `CODEX_HOME` 下的平台数据目录；项目级安装使用
+`npm run update -- --root /absolute/project`。
+
+首次升级到提供此命令的版本，先执行 `git pull --ff-only` 和 `npm ci`。
+更新命令拒绝有本地改动的仓库，检查注册路径与活动任务，然后快进拉取当前
+分支的上游、执行 npm ci、重新安装 Python 服务，并验证注册命令的五个工具。
+不调用模型，不重写密钥、MCP 配置或 Skill，也不删除旧环境、任务数据。
+自定义 Skill 保留原样；需要新版 Skill 时另行通过 setup 确认安装。
+更新期间不要重新打开 MCP。失败会停止，但已拉取的代码和依赖不自动回滚；
+排除问题后重试，未通过握手不视为升级成功。
+
+### 容器中的显式 direct 后端
+
+某些 Jupyter/GPU 容器虽然安装了 Bubblewrap，但宿主 seccomp 会拦截
+`unshare(CLONE_NEWUSER)`，同时 Landlock 不可用。此时不要让服务自动降级；
+在 Codex MCP 的环境变量中显式配置：
+
+```toml
+[mcp_servers.dsh-in-codex.env]
+HARNESS_MCP_EXECUTION_BACKEND = "direct"
+```
+
+`direct` 会设置 Harness 的 `danger-full-access` 模式，直接执行已有命令
+执行逻辑，不调用 `bwrap`，也不要求 Landlock。任务仍必须通过 workspace
+路径校验，且任务记录会标记 `execution_backend = "direct"` 和 `unsafe = true`。
+默认值是 `sandbox`，任何 `SANDBOX_UNAVAILABLE` 都会继续失败，不会自动重试
+为 direct。
 
 ## 开发与验证
 
