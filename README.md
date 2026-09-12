@@ -1,4 +1,7 @@
 # dsh-in-codex
+
+![dsh-in-codex](docs/assets/banner.svg)
+
 Codex 负责规划与验收，DeepSeek Harness 负责代码修改和测试。
 
 非官方社区 MCP 集成，支持 Windows 和 Ubuntu / WSL。采用 [MIT 许可证](LICENSE)。

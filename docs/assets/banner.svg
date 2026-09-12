@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="640" viewBox="0 0 1600 640" role="img" aria-labelledby="title desc">
+  <title id="title">dsh-in-codex</title>
+  <desc id="desc">A liquid glass banner for Codex and DeepSeek Harness collaboration.</desc>
+  <defs>
+    <radialGradient id="a"><stop stop-color="#5ee6bb" stop-opacity=".3"/><stop offset="1" stop-color="#5ee6bb" stop-opacity="0"/></radialGradient>
+    <radialGradient id="b"><stop stop-color="#6ba7ff" stop-opacity=".3"/><stop offset="1" stop-color="#6ba7ff" stop-opacity="0"/></radialGradient>
+    <linearGradient id="glass" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff" stop-opacity=".16"/><stop offset=".45" stop-color="#fff" stop-opacity=".035"/><stop offset="1" stop-color="#83b9ff" stop-opacity=".1"/></linearGradient>
+    <linearGradient id="edge" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#d8fff1" stop-opacity=".75"/><stop offset=".5" stop-color="#87a8c7" stop-opacity=".2"/><stop offset="1" stop-color="#9ad5ff" stop-opacity=".65"/></linearGradient>
+    <linearGradient id="wordmark" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#f7fbff"/><stop offset=".5" stop-color="#d9f6ed"/><stop offset="1" stop-color="#86f0c9"/></linearGradient>
+    <filter id="blur"><feGaussianBlur stdDeviation="55"/></filter>
+    <filter id="shadow" x="-20%" y="-30%" width="140%" height="160%"><feDropShadow dy="28" stdDeviation="32" flood-color="#000" flood-opacity=".55"/></filter>
+    <filter id="wordmarkGlow" x="-10%" y="-40%" width="120%" height="180%"><feDropShadow dy="7" stdDeviation="11" flood-color="#64e9bc" flood-opacity=".23"/></filter>
+  </defs>
+  <rect width="1600" height="640" fill="#080d14"/>
+  <circle cx="230" cy="105" r="240" fill="url(#a)" filter="url(#blur)"/>
+  <circle cx="1390" cy="520" r="260" fill="url(#b)" filter="url(#blur)"/>
+  <circle cx="1260" cy="150" r="100" fill="#fff" opacity=".035" filter="url(#blur)"/>
+  <rect x="90" y="68" width="1420" height="504" rx="26" fill="url(#glass)" stroke="url(#edge)" stroke-width="1.5" filter="url(#shadow)"/>
+  <path d="M114 94H1486" stroke="#fff" stroke-opacity=".2"/>
+  <circle cx="132" cy="110" r="8" fill="#ff7582"/><circle cx="160" cy="110" r="8" fill="#ffd166"/><circle cx="188" cy="110" r="8" fill="#65edbf"/>
+  <text x="230" y="118" fill="#b7c9d9" font-family="Consolas, monospace" font-size="20">dsh-in-codex / task session</text>
+  <g font-family="Consolas, monospace">
+    <text x="195" y="258" fill="#78f0c7" font-size="34">$</text>
+    <text x="252" y="258" fill="url(#wordmark)" font-size="88" font-weight="700" letter-spacing="-2" filter="url(#wordmarkGlow)">dsh-in-codex</text>
+    <text x="252" y="315" fill="#d4e0eb" font-size="22">Codex plans. Harness implements.</text>
+    <text x="252" y="351" fill="#a5b6c6" font-size="22">Tests return. Sessions continue.</text>
+    <path d="M240 385H1360" stroke="#b4d0e5" stroke-opacity=".25" stroke-width="2"/>
+    <text x="240" y="445" fill="#62caff" font-size="21">submit_task</text><text x="470" y="445" fill="#71efc2" font-size="21">→</text><text x="530" y="445" fill="#d8b2ff" font-size="21">wait_task</text><text x="750" y="445" fill="#71efc2" font-size="21">→</text><text x="810" y="445" fill="#d8b2ff" font-size="21">verify</text><text x="960" y="445" fill="#71efc2" font-size="21">→</text><text x="1020" y="445" fill="#d8b2ff" font-size="21">continue_task</text>
+    <text x="240" y="512" fill="#78f0c7" font-size="21">MCP</text><text x="350" y="512" fill="#91a8bc" font-size="21">/</text><text x="410" y="512" fill="#b0c0cf" font-size="21">WINDOWS + LINUX</text><text x="800" y="512" fill="#91a8bc" font-size="21">/</text><text x="860" y="512" fill="#b0c0cf" font-size="21">OPEN SOURCE</text>
+  </g>
+</svg>
