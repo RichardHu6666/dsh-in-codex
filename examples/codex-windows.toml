@@ -1,10 +1,10 @@
 # Replace both directories. If needed, use the absolute path to node.exe.
-[mcp_servers.deepseek_harness]
+[mcp_servers."dsh-in-codex"]
 command = "node"
 args = ["C:/tools/dsh-in-codex/bin/cli.cjs", "serve", "--root", "C:/projects/my-app"]
 env_vars = ["DEEPSEEK_API_KEY", "DEEPSEEK_BASE_URL", "HTTP_PROXY", "HTTPS_PROXY", "NO_PROXY"]
 startup_timeout_sec = 60
 tool_timeout_sec = 70
 
-[mcp_servers.deepseek_harness.env]
+[mcp_servers."dsh-in-codex".env]
 HARNESS_MCP_MAX_CONCURRENCY = "8"

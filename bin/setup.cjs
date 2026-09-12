@@ -83,7 +83,8 @@ async function setup(options, api) {
       });
     }
     const skill = await confirm({ message: `安装${scope === 'user' ? '用户级' : '项目级'} Codex Skill？已有不同内容时会备份替换。`, default: true });
-    console.log(`将合并 ${root}/.gitignore，${key ? '更新' : '保留'} .env，${info.existing_mcp ? '更新已有' : '新增'} dsh-in-codex MCP 配置。`);
+    const migration = info.legacy_mcp ? '（同时迁移旧 deepseek_harness 配置）' : '';
+    console.log(`将合并 ${root}/.gitignore，${key ? '更新' : '保留'} .env，${info.existing_mcp ? '更新已有' : '新增'} dsh-in-codex MCP 配置${migration}。`);
     console.log('其他 MCP 配置不变。修改前备份保存在服务数据目录的 .runtime/setup-backups。');
     if (!await confirm({ message: '确认写入以上配置？', default: false })) {
       key = undefined;

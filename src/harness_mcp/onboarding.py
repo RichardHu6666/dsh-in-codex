@@ -26,6 +26,24 @@ class SetupError(Exception):
     pass
 
 
+MCP_SERVER_NAME = "dsh-in-codex"
+LEGACY_MCP_SERVER_NAMES = ("deepseek_harness",)
+
+
+def mcp_servers(doc):
+    return doc.get("mcp_servers", {})
+
+
+def configured_entry(doc):
+    servers = mcp_servers(doc)
+    if MCP_SERVER_NAME in servers:
+        return servers[MCP_SERVER_NAME]
+    for legacy in LEGACY_MCP_SERVER_NAMES:
+        if legacy in servers:
+            return servers[legacy]
+    return None
+
+
 def paths(request: dict) -> tuple[Path, Path, Path]:
     raw = Path(request["root"])
     if not raw.is_absolute() or not raw.is_dir():
@@ -92,7 +110,8 @@ def inspect(request: dict) -> dict:
     return {
         "config_path": str(config),
         "revision": revision(snapshot),
-        "existing_mcp": "deepseek_harness" in doc.get("mcp_servers", {}),
+        "existing_mcp": configured_entry(doc) is not None,
+        "legacy_mcp": any(name in doc.get("mcp_servers", {}) for name in LEGACY_MCP_SERVER_NAMES),
         "local_key": bool((values.get("DEEPSEEK_API_KEY") or "").strip()),
         "environment_key": bool(os.environ.get("DEEPSEEK_API_KEY", "").strip()),
         "env_tracked": env_tracked(root),
@@ -150,7 +169,16 @@ def config_bytes(data: bytes | None, request: dict) -> bytes:
     root, _, _ = paths(request)
     doc = document(data)
     servers = doc.setdefault("mcp_servers", tomlkit.table())
-    entry = servers.setdefault("deepseek_harness", tomlkit.table())
+    entry = configured_entry(doc)
+    if entry is None:
+        entry = tomlkit.table()
+    elif MCP_SERVER_NAME not in servers:
+        # Migrate the old user-facing key without changing its settings.
+        for legacy in LEGACY_MCP_SERVER_NAMES:
+            if legacy in servers:
+                del servers[legacy]
+                break
+    servers[MCP_SERVER_NAME] = entry
     # Replace transport selection, not other servers or this server's approval policy.
     for field in ("url", "http_headers", "env_http_headers", "bearer_token_env_var"):
         entry.pop(field, None)
@@ -263,7 +291,7 @@ async def verify(request: dict) -> dict:
     from mcp.client.stdio import stdio_client
 
     root, config, _ = paths(request)
-    entry = document(read_file(config))["mcp_servers"]["deepseek_harness"]
+    entry = document(read_file(config))["mcp_servers"][MCP_SERVER_NAME]
     env = {**os.environ, **entry.get("env", {})}
     params = StdioServerParameters(
         command=entry["command"], args=list(entry["args"]), env=env, cwd=str(root),

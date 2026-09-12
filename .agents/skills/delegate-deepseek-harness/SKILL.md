@@ -6,7 +6,7 @@ description: Delegate bounded coding and testing tasks to the DeepSeek Harness M
 # Delegate to DeepSeek Harness
 
 Keep planning and acceptance in Codex. Delegate complete bounded changes through
-the `deepseek_harness` MCP server; do not orchestrate individual file or shell tools.
+the `dsh-in-codex` MCP server; do not orchestrate individual file or shell tools.
 
 - Inspect enough code to state the goal, allowed paths, constraints and concrete
   acceptance criteria. Call `submit_task(workspace, instruction, acceptance)`.

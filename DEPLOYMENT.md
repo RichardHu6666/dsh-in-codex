@@ -231,7 +231,7 @@ Linux 替换为对应的绝对路径。正常输出包括依赖检查通过和
 下面是 Windows 示例，**两处目录都需要替换**：
 
 ```toml
-[mcp_servers.deepseek_harness]
+[mcp_servers."dsh-in-codex"]
 command = "node"
 args = ["C:/tools/dsh-in-codex/bin/cli.cjs", "serve", "--root", "C:/projects/my-app"]
 env_vars = ["DEEPSEEK_API_KEY", "DEEPSEEK_BASE_URL", "HTTP_PROXY", "HTTPS_PROXY", "NO_PROXY"]
@@ -242,8 +242,8 @@ tool_timeout_sec = 70
 若桌面客户端找不到 `node`，将 `command` 改为 Node 可执行文件的绝对路径。
 Linux 示例见 [examples/codex-linux.toml](examples/codex-linux.toml)，
 Windows 示例见 [examples/codex-windows.toml](examples/codex-windows.toml)。
-配置中的服务键暂时保留为 `deepseek_harness`，这是 Codex 的内部兼容标识；
-用户侧项目名称、启动命令和使用方式统一称为 `dsh-in-codex`。
+`dsh-in-codex` 是 Codex 中显示的 MCP 服务名。旧版本曾使用
+`deepseek_harness`，运行 setup 会自动迁移该配置键，不会影响其他 MCP。
 
 可将 [.agents/skills/delegate-deepseek-harness](.agents/skills/delegate-deepseek-harness)
 复制到你的任务项目的 `.agents/skills/`，让 Codex 使用任务委派与独立验收规则。

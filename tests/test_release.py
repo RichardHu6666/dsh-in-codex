@@ -22,7 +22,7 @@ def test_public_metadata():
 def test_config_examples_use_launcher():
     for name in ("codex-windows.toml", "codex-linux.toml"):
         config = tomllib.loads((ROOT / "examples" / name).read_text(encoding="utf-8"))
-        server = config["mcp_servers"]["deepseek_harness"]
+        server = config["mcp_servers"]["dsh-in-codex"]
         assert server["command"] == "node"
         assert server["args"][1:3] == ["serve", "--root"]
         assert server["tool_timeout_sec"] > 60
