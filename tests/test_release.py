@@ -30,7 +30,17 @@ def test_config_examples_use_launcher():
 
 
 def test_readme_local_links_exist():
+    for name in ("README.md", "DEPLOYMENT.md"):
+        text = (ROOT / name).read_text(encoding="utf-8")
+        for target in re.findall(r"\]\(([^)]+)\)", text):
+            if "://" not in target and not target.startswith("#"):
+                assert (ROOT / target.split("#")[0]).exists(), (name, target)
+
+
+def test_quick_start_and_deployment_guide_are_shipped():
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
-    for target in re.findall(r"\]\(([^)]+)\)", readme):
-        if "://" not in target and not target.startswith("#"):
-            assert (ROOT / target.split("#")[0]).exists(), target
+    assert len(readme.splitlines()) <= 80
+    assert "npm ci\nnpm run setup" in readme
+    assert "DEPLOYMENT.md" in readme
+    package = json.loads((ROOT / "package.json").read_text(encoding="utf-8"))
+    assert "DEPLOYMENT.md" in package["files"]
