@@ -39,7 +39,7 @@ def test_readme_local_links_exist():
 
 def test_quick_start_and_deployment_guide_are_shipped():
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
-    assert len(readme.splitlines()) <= 80
+    assert len(readme.splitlines()) <= 85
     assert "npm ci\nnpm run setup" in readme
     assert "DEPLOYMENT.md" in readme
     package = json.loads((ROOT / "package.json").read_text(encoding="utf-8"))

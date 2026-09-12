@@ -65,7 +65,9 @@ def test_dynamic_paths_require_explicit_project(tmp_path):
 def test_mode_environment_validation(tmp_path, monkeypatch):
     monkeypatch.setenv("HARNESS_MCP_ROOT", str(tmp_path))
     monkeypatch.setenv("HARNESS_MCP_WORKSPACE_MODE", "dynamic")
+    monkeypatch.delenv("HARNESS_MCP_MODEL", raising=False)
     assert Settings.from_env().workspace_mode == "dynamic"
+    assert Settings.from_env().model == "deepseek-flash"
     monkeypatch.setenv("HARNESS_MCP_WORKSPACE_MODE", "invalid")
     with pytest.raises(ValueError, match="fixed or dynamic"):
         Settings.from_env()

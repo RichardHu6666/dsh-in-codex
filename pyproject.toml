@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "codex-deepseek-harness-mcp"
-version = "0.1.0"
+version = "0.1.1"
 description = "Task-level MCP bridge to the official DeepSeek Harness runtime"
 license = "MIT"
 license-files = ["LICENSE"]

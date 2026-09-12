@@ -22,7 +22,7 @@ def load_local_credentials(root: Path) -> None:
 @dataclass(frozen=True)
 class Settings:
     root: Path
-    model: str = "deepseek-v4-flash"
+    model: str = "deepseek-flash"
     timeout: float = 1800
     initialize_timeout: float = 60
     max_concurrency: int = 8
@@ -54,7 +54,7 @@ class Settings:
         backend = os.environ.get("HARNESS_MCP_EXECUTION_BACKEND", "sandbox").strip().lower()
         if backend not in {"sandbox", "direct"}:
             raise ValueError("HARNESS_MCP_EXECUTION_BACKEND must be sandbox or direct")
-        return cls(root, os.environ.get("HARNESS_MCP_MODEL", "deepseek-v4-flash"),
+        return cls(root, os.environ.get("HARNESS_MCP_MODEL", "deepseek-flash"),
                    timeout, 60, max_concurrency, mode, backend)
 
     @property

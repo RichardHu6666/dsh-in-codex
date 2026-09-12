@@ -1,6 +1,6 @@
 {
   "name": "dsh-in-codex",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Unofficial task-level DeepSeek Harness MCP bridge for Codex",
   "license": "MIT",
   "author": "RichardHu6666",

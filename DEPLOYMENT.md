@@ -316,7 +316,7 @@ submit_task -> wait_task -> 检查事件、diff 与测试
 | `DSH_IN_CODEX_PYTHON` | 初始化时的 Python 路径，亦可用 `--python` 指定 |
 | `DEEPSEEK_API_KEY` | 模型凭证 |
 | `DEEPSEEK_BASE_URL` | 可选服务地址，须与 Harness provider 兼容 |
-| `HARNESS_MCP_MODEL` | `deepseek-v4-flash`，可按账户可用模型调整 |
+| `HARNESS_MCP_MODEL` | `deepseek-flash`，可按账户可用模型调整 |
 | `HARNESS_MCP_MAX_CONCURRENCY` | `8`，范围 `1..64`，同根目录各客户端应配置一致 |
 | `HARNESS_MCP_TIMEOUT` | 单轮超时，默认 `1800` 秒，范围 `1..86400` |
 | `HARNESS_MCP_RUNTIME` | Windows 默认 `node`，Linux 默认 `bundled` |
