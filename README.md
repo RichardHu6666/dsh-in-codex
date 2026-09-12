@@ -4,6 +4,8 @@ Codex 负责规划与验收，DeepSeek Harness 负责代码修改和测试。
 
 非官方社区 MCP 集成，支持 Windows 和 Ubuntu / WSL。采用 [MIT 许可证](LICENSE)。
 
+前置条件：需要已经安装codex
+
 ## 快速开始
 
 ```bash
